@@ -2,7 +2,14 @@
   "display_information": {
     "name": "Albus",
     "description": "A friendly cyber otter.",
-    "background_color": "#06050b"
+    "background_color": "#06050b",
+    "icons": {
+      "image_36": "https://github.com/hughsername/albus/blob/main/slack/albus_36.png?raw=true",
+      "image_48": "https://github.com/hughsername/albus/blob/main/slack/albus_48.png?raw=true",
+      "image_72": "https://github.com/hughsername/albus/blob/main/slack/albus_72.png?raw=true",
+      "image_192": "https://github.com/hughsername/albus/blob/main/slack/albus_192.png?raw=true",
+      "image_512": "https://github.com/hughsername/albus/blob/main/slack/albus_512.png?raw=true"
+    }
   },
   "features": {
     "app_home": {
