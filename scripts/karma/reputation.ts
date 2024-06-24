@@ -6,6 +6,7 @@ import {
   PutItemCommandInput,
   UpdateItemCommandOutput,
 } from "@aws-sdk/client-dynamodb";
+import { isDynamoDBError } from "../../utils/typeguards";
 
 // Function to parse the string and count word changes
 export function deltaReputation(inputString: string): Record<string, number> {
@@ -22,18 +23,6 @@ export function deltaReputation(inputString: string): Record<string, number> {
   }
 
   return changes;
-}
-
-// Function to determine if an error is a DynamoDB specific error
-function isDynamoDBError(
-  error: unknown
-): error is { name: string; message: string } {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "name" in error &&
-    "message" in error
-  );
 }
 
 // Function to update or insert word counts in DynamoDB
