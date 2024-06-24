@@ -1,8 +1,11 @@
 import { App } from "@slack/bolt";
 import hello from "./scripts/hello";
 import house from "./scripts/house";
-import karma from "./scripts/karma/karma";
+import karma from "./scripts/karma";
 import contrition from "./scripts/contrition";
+import migrations from "./migrations";
+
+migrations();
 
 // Initializes your app with your bot token and signing secret
 const app = new App({
