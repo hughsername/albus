@@ -2,6 +2,7 @@ import { App } from "@slack/bolt";
 import hello from "./scripts/hello";
 import house from "./scripts/house";
 import karma from "./scripts/karma";
+import yourface from "./scripts/yourface";
 import contrition from "./scripts/contrition";
 import migrations from "./migrations";
 
@@ -19,6 +20,7 @@ hello(app);
 karma(app);
 //house(app);
 contrition(app);
+yourface(app);
 
 (async () => {
   // Start your app
