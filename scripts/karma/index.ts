@@ -10,7 +10,7 @@ import { deltaReputation } from "./utils";
  */
 const karma = async (app: AppCustomContext) => {
   // Listens to incoming messages that contain "++" or "--"
-  app.message(/([\w<@>]+)\s*([\+\-]{2})/g, async ({ message, say }) => {
+  app.message(/([\w<@>]+)([\+\-]{2})/g, async ({ message, say }) => {
     if (message.subtype === undefined || message.subtype === "bot_message") {
       if (
         message.text &&
@@ -18,7 +18,7 @@ const karma = async (app: AppCustomContext) => {
         message.text.trim() !== "" &&
         message.user
       ) {
-        const changes = deltaReputation(message.text);
+        const changes = deltaReputation(message.text, message.user);
         const totals = await writeReputationToDynamoDB(changes);
         await say(randomizeKarmaResponse(changes, totals, message.user));
       }

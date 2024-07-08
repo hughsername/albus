@@ -53,6 +53,10 @@ function getRandomNegativeMessage(
   );
 
   // Return the randomly selected positive streak phrase with username and thing substituted
+  if (thing === `<@${username}>`) {
+    return `Oh, ${thing}, that's a cheap trick. What goes around comes around, my friend. (*${count}* | ${total})`;
+    //TODO: Find a way to work in https://giphy.com/gifs/bucks-milwaukee-34-blocked-shot-KbGWXmC39RdsXCHDsk
+  }
   return negativePhrases[randomIndex];
 }
 
