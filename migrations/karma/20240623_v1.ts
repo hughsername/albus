@@ -17,17 +17,38 @@ export default async function createTableIfNotExists() {
     endpoint: endpoint,
   });
 
-  // Define table creation parameters
+  // Define table creation parameters including sort key for reputation
   const tableParams: CreateTableCommandInput = {
     TableName: "karma",
     KeySchema: [
       { AttributeName: "username", KeyType: "HASH" }, // Partition key
     ],
-    AttributeDefinitions: [{ AttributeName: "username", AttributeType: "S" }],
+    AttributeDefinitions: [
+      { AttributeName: "username", AttributeType: "S" },
+      { AttributeName: "reputation", AttributeType: "N" }, // Attribute for reputation sort key
+      { AttributeName: "staticKey", AttributeType: "S" }, // Static key for GSI
+    ],
     ProvisionedThroughput: {
       ReadCapacityUnits: 5,
       WriteCapacityUnits: 5,
     },
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: "ReputationIndex",
+        KeySchema: [
+          { AttributeName: "staticKey", KeyType: "HASH" }, // Static partition key for GSI
+          { AttributeName: "reputation", KeyType: "RANGE" }, // Sort key for reputation in GSI
+        ],
+        Projection: {
+          ProjectionType: "INCLUDE",
+          NonKeyAttributes: ["username", "reputation"], // Projected attributes
+        },
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 5,
+          WriteCapacityUnits: 5,
+        },
+      },
+    ],
   };
 
   try {
@@ -80,12 +101,3 @@ export default async function createTableIfNotExists() {
     throw error;
   }
 }
-
-// // Run the table creation script
-// createTableIfNotExists()
-//   .then(() => {
-//     console.log("Done!");
-//   })
-//   .catch((error) => {
-//     console.error("Script failed:", error);
-//   });

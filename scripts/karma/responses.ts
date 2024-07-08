@@ -1,5 +1,10 @@
 // Define the phrases for positive and negative karma
-function getRandomPositiveMesssage(username: string, thing: string, total: string, count: number): string {
+function getRandomPositiveMesssage(
+  username: string,
+  thing: string,
+  total: string,
+  count: number
+): string {
   const positivePhrases: string[] = [
     `${thing} (+*${count}* | ${total}) is on an unstoppable streak, thanks to <@${username}>! Keep the momentum going!`,
     `${thing} (+*${count}* | ${total}) is crushing it, all thanks to <@${username}>! Keep up the great work!`,
@@ -14,14 +19,21 @@ function getRandomPositiveMesssage(username: string, thing: string, total: strin
   ];
 
   // Generate a random index to select a phrase
-  const randomIndex: number = Math.floor(Math.random() * positivePhrases.length);
+  const randomIndex: number = Math.floor(
+    Math.random() * positivePhrases.length
+  );
 
   // Return the randomly selected positive streak phrase with username and thing substituted
   return positivePhrases[randomIndex];
 }
 
 // Define the phrases for positive and negative karma
-function getRandomNegativeMessage(username: string, thing: string, total: string, count: number): string {
+function getRandomNegativeMessage(
+  username: string,
+  thing: string,
+  total: string,
+  count: number
+): string {
   const negativePhrases: string[] = [
     `${thing} (*${count}* | ${total}) took a nosedive after encountering <@${username}>.`,
     `${thing} (*${count}* | ${total}) - ya burnt. <@${username}> - ya burnter.`,
@@ -36,16 +48,18 @@ function getRandomNegativeMessage(username: string, thing: string, total: string
   ];
 
   // Generate a random index to select a phrase
-  const randomIndex: number = Math.floor(Math.random() * negativePhrases.length);
+  const randomIndex: number = Math.floor(
+    Math.random() * negativePhrases.length
+  );
 
   // Return the randomly selected positive streak phrase with username and thing substituted
   return negativePhrases[randomIndex];
 }
 
-export function generateKarmaMessages(
+export function randomizeKarmaResponse(
   changes: Record<string, number>,
   totals: Record<string, string>,
-  username: string,
+  username: string
 ): string {
   const messages: string[] = [];
 
@@ -60,5 +74,5 @@ export function generateKarmaMessages(
     messages.push(message);
   }
 
-  return messages.join('\n');
+  return messages.join("\n");
 }
