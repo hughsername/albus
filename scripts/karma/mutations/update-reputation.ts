@@ -6,26 +6,9 @@ import {
   PutItemCommandInput,
   UpdateItemCommandOutput,
 } from "@aws-sdk/client-dynamodb";
-import { isDynamoDBError } from "../../utils/typeguards";
+import { isDynamoDBError } from "../../../utils/typeguards";
 
-// Function to parse the string and count word changes
-export function deltaReputation(inputString: string): Record<string, number> {
-  const regex = /([\w<@>]+)\s*([\+\-]{2})/g;
-  const matches: RegExpMatchArray | null = inputString.match(regex);
-
-  const changes: { [key: string]: number } = {};
-  if (matches) {
-    matches.forEach((match) => {
-      const word: string = match.slice(0, -2); // Remove the '++' or '--' from the matched word
-      const operator: string = match.slice(-2); // Get the operator '++' or '--'
-      changes[word] = (changes[word] || 0) + (operator === "++" ? 1 : -1); // Increment or decrement the count for the word
-    });
-  }
-
-  return changes;
-}
-
-// Function to update or insert word counts in DynamoDB
+// Function to update or insert reputation counts in DynamoDB
 export async function writeReputationToDynamoDB(
   changes: Record<string, number>
 ): Promise<{ [key: string]: string }> {
@@ -48,11 +31,15 @@ export async function writeReputationToDynamoDB(
       TableName: "karma",
       Key: { username: { S: username } },
       UpdateExpression:
-        "SET #reputation = if_not_exists(#reputation, :zero) + :change",
-      ExpressionAttributeNames: { "#reputation": "reputation" },
+        "SET #reputation = if_not_exists(#reputation, :zero) + :change, #staticKey = :staticVal",
+      ExpressionAttributeNames: {
+        "#reputation": "reputation",
+        "#staticKey": "staticKey",
+      },
       ExpressionAttributeValues: {
         ":change": { N: countChange.toString() }, // Directly use the number change
         ":zero": { N: "0" }, // Start with zero if the attribute doesn't exist
+        ":staticVal": { S: "scoreboard" }, // Static key value
       },
       ReturnValues: "UPDATED_NEW",
     };
@@ -63,7 +50,6 @@ export async function writeReputationToDynamoDB(
         new UpdateItemCommand(updateParams)
       );
       karma = updateOut?.Attributes?.reputation?.N ?? `¯\_(ツ)_/¯`;
-      console.log(`Successfully updated reputation for ${username}`);
     } catch (error) {
       // If the error is a DynamoDB specific error
       if (isDynamoDBError(error)) {
@@ -71,21 +57,18 @@ export async function writeReputationToDynamoDB(
           error.name === "ResourceNotFoundException" ||
           error.message.includes("ConditionalCheckFailedException")
         ) {
-          console.log(`Item for ${username} not found, creating new item.`);
           const putItemParams: PutItemCommandInput = {
             TableName: "karma",
             Item: {
               username: { S: username },
               reputation: { N: countChange.toString() }, // Use the initial count value directly
+              staticKey: { S: "scoreboard" }, // Static key value for GSI
             },
           };
           const putOut = await dynamoDBClient.send(
             new PutItemCommand(putItemParams)
           );
           karma = putOut?.Attributes?.reputation?.N ?? `¯\_(ツ)_/¯`;
-          console.log(
-            `Successfully created and updated reputation for ${username}`
-          );
         } else {
           // Log or rethrow other errors
           console.error(`Failed to update reputation for ${username}:`, error);
@@ -102,9 +85,3 @@ export async function writeReputationToDynamoDB(
   }
   return totals;
 }
-
-// Example usage
-const testString =
-  "noise anything++ noise anything++ anything++ anything++ boring-- noise boring-- animal++";
-const changes: Record<string, number> = deltaReputation(testString);
-//await writeReputationToDynamoDB(changes);
