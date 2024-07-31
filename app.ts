@@ -5,6 +5,7 @@ import karma from "./scripts/karma";
 import yourface from "./scripts/yourface";
 import contrition from "./scripts/contrition";
 import migrations from "./migrations";
+import ooc from "./scripts/ooc";
 
 migrations();
 
@@ -18,6 +19,7 @@ const app = new App({
 
 hello(app);
 karma(app);
+ooc(app);
 //house(app);
 contrition(app);
 yourface(app);
