@@ -14,7 +14,7 @@ const yourface = async (app: AppCustomContext) => {
       const match = message.text.match(regexPattern);
       if (match) {
         // Generate a random number to determine if the bot should respond
-        const shouldRespond = Math.random() <= 0.07; // 7% chance
+        const shouldRespond = Math.random() <= 0.015; // 1.5% chance
 
         // Capture the verb and the rest of the sentence
         const verb = match[1]; // e.g., "am", "is", "are", etc.
