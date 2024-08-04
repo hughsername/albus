@@ -1,4 +1,5 @@
 import type AppCustomContext from "@slack/bolt/dist/App.d.ts";
+import { shouldBehave } from "./behave/queries/get-behave";
 
 const yourface = async (app: AppCustomContext) => {
   // Define your regex pattern for matching sentences
@@ -9,7 +10,8 @@ const yourface = async (app: AppCustomContext) => {
     if (
       message.type === "message" &&
       (message.subtype === undefined || message.subtype === "bot_message") &&
-      message.text
+      message.text &&
+      !shouldBehave(message.channel) // Only play your face when we're relaxed.
     ) {
       const match = message.text.match(regexPattern);
       if (match) {
